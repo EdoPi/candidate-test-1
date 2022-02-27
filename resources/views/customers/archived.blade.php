@@ -4,7 +4,7 @@
 <div class="row">
   <div class="offset-md-10 col-md-2">
     <a href="{{ route('customers.create') }}" class="btn btn-primary btn-block">+ New Customer</a>
-    <a href="{{ route('customers.archived') }}" class="btn btn-primary btn-block">Archived Customers</a>
+    <a href="{{ route('customers.index') }}" class="btn btn-primary btn-block">Customers List</a>
   </div>
 </div>
 <br>
@@ -31,14 +31,7 @@
             <td>{{ $customer->email }}</td>
             <td>{{ $customer->phone }}</td>
             <td>{{ $customer->company }}</td>
-            <td><a class="btn btn-primary btn-sm" href="{{ route('customers.edit', $customer) }}">EDIT</a></td>
-            <td>
-                <form class ="delete" action="{{route('customers.destroy', $customer)}}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-sm btn-danger" type="submit" value="submit">DELETE</button>
-                </form>
-            </td>
+            <td><a class="btn btn-primary btn-sm" href="{{ route('customers.restore', $customer) }}">RESTORE</a></td>
           </tr>
         @endforeach
       </tbody>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Order;
+use App\Models\Contract;
 use Illuminate\Http\Request;
 
 class CustomersController extends Controller
@@ -74,7 +76,30 @@ class CustomersController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
+        $orders= Order::select('id')->where('customer_id',$customer->id)->get();
+        Order::where('customer_id', $customer->id)->delete();
+        foreach($orders as $order){
+            Contract::where('order_id', $order->id)->delete();
+        }
+
 
         return redirect()->route('customers.index')->withMessage('Customer deleted successfully');
+    }
+
+    public function archived()
+    {
+        return view('customers.archived')->withCustomers(Customer::onlyTrashed()->paginate(10));
+    }
+
+    public function restore($id)
+    {
+        Customer::where('id', $id)->restore();
+        $orders= Order::onlyTrashed()->where('customer_id',$id)->get();
+        Order::where('customer_id', $id)->restore();
+        foreach($orders as $order)
+        {
+            Contract::where('order_id', $order->id)->restore();
+        }
+        return view('customers.archived')->withCustomers(Customer::onlyTrashed()->paginate(10));
     }
 }
